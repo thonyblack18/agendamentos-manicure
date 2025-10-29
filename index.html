@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Studio de Manicure - Sistema em Tempo Real</title>
+    <title>Studio de Manicure - Sistema de Agendamento</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
@@ -681,7 +681,7 @@
                 <div class="calendar">
                     <div class="calendar-header">
                         <button id="prev-month">&lt;</button>
-                        <h3 id="current-month">Junho 2023</h3>
+                        <h3 id="current-month">Outubro 2024</h3>
                         <button id="next-month">&gt;</button>
                     </div>
                     <div class="calendar-grid">
@@ -798,14 +798,14 @@
                 </div>
             </div>
             <div class="copyright">
-                <p>&copy; 2023 Studio de Beleza. Todos os direitos reservados.</p>
+                <p>&copy; 2024 Studio de Beleza. Todos os direitos reservados.</p>
             </div>
         </div>
     </footer>
 
     <script>
-        // CONFIGURAÇÃO - SUBSTITUA COM SUA URL DO GOOGLE APPS SCRIPT
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyZUtLY3QAd4WuHYOIoB_oV2f_Pj6UQknamipqvXtuKsQaQKMxWl4kgZ4OF1GytDrtP/exec';
+        // SUA URL DO GOOGLE APPS SCRIPT - COLE AQUI SUA URL
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/sAKfycbyZUtLY3QAd4WuHYOIoB_oV2f_Pj6UQknamipqvXtuKsQaQKMxWl4kgZ4OF1GytDrtP/exec';
         
         // Variáveis globais
         let currentDate = new Date();
@@ -873,26 +873,30 @@
             updateSyncStatus('Sincronizando com a nuvem...', 'syncing');
             
             try {
-                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAppointments`);
-                const data = await response.json();
-                
-                if (data.success) {
-                    appointments = data.appointments || [];
-                    updateAppointmentsList();
-                    renderCalendar();
-                    updateSyncStatus('Sincronizado com sucesso!', 'success');
-                } else {
-                    throw new Error(data.error || 'Erro ao carregar agendamentos');
+                // Tenta carregar do Google Sheets
+                if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.includes('google.com')) {
+                    const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAppointments`);
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        appointments = data.appointments || [];
+                        updateAppointmentsList();
+                        renderCalendar();
+                        updateSyncStatus('Sincronizado com sucesso!', 'success');
+                        return;
+                    }
                 }
-            } catch (error) {
-                console.error('Erro ao carregar agendamentos:', error);
-                updateSyncStatus('Erro na sincronização. Usando dados locais.', 'error');
                 
                 // Fallback para localStorage
+                throw new Error('Google Sheets não disponível');
+                
+            } catch (error) {
+                console.log('Usando modo local:', error);
                 const localAppointments = JSON.parse(localStorage.getItem('manicureAppointments')) || [];
                 appointments = localAppointments;
                 updateAppointmentsList();
                 renderCalendar();
+                updateSyncStatus('Modo local - Dados salvos no navegador', 'syncing');
             }
         }
         
@@ -1076,58 +1080,67 @@
             
             try {
                 // Tenta salvar no Google Sheets
-                const response = await fetch(GOOGLE_SCRIPT_URL, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'addAppointment',
-                        appointment: appointment
-                    })
-                });
-                
-                const result = await response.json();
-                
-                if (result.success) {
-                    // Adiciona à lista local
-                    appointments.push(appointment);
-                    localStorage.setItem('manicureAppointments', JSON.stringify(appointments));
-                    
-                    // Atualiza a lista de agendamentos
-                    updateAppointmentsList();
-                    
-                    // Mostra o modal de confirmação
-                    showConfirmationModal(appointment);
-                    
-                    // Limpa o formulário
-                    appointmentForm.reset();
-                    selectedServiceElement.textContent = 'Selecione um serviço';
-                    selectedDateElement.textContent = '--/--/----';
-                    selectedTimeElement.textContent = '--:--';
-                    selectedDate = null;
-                    selectedTime = null;
-                    
-                    // Remove seleções do calendário
-                    document.querySelectorAll('.calendar-date.selected').forEach(el => {
-                        el.classList.remove('selected');
+                if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.includes('google.com')) {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'addAppointment',
+                            appointment: appointment
+                        })
                     });
                     
-                    document.querySelectorAll('.time-slot.selected').forEach(el => {
-                        el.classList.remove('selected');
-                    });
+                    const result = await response.json();
                     
-                    // Atualiza o calendário
-                    renderCalendar();
-                    updateSyncStatus('Agendamento salvo com sucesso!', 'success');
-                } else {
-                    throw new Error(result.error || 'Erro ao salvar agendamento');
+                    if (result.success) {
+                        // Adiciona à lista local também
+                        appointments.push(appointment);
+                        localStorage.setItem('manicureAppointments', JSON.stringify(appointments));
+                        
+                        updateAppointmentsList();
+                        showConfirmationModal(appointment);
+                        clearForm();
+                        renderCalendar();
+                        updateSyncStatus('Agendamento salvo na nuvem!', 'success');
+                        return;
+                    }
                 }
+                
+                // Fallback: salva apenas localmente
+                throw new Error('Google Sheets não disponível');
+                
             } catch (error) {
-                console.error('Erro ao salvar agendamento:', error);
-                alert('Erro ao salvar agendamento. Tente novamente.');
-                updateSyncStatus('Erro ao salvar agendamento', 'error');
+                // Salva apenas localmente
+                appointments.push(appointment);
+                localStorage.setItem('manicureAppointments', JSON.stringify(appointments));
+                
+                updateAppointmentsList();
+                showConfirmationModal(appointment);
+                clearForm();
+                renderCalendar();
+                updateSyncStatus('Agendamento salvo localmente', 'syncing');
+                alert('Agendamento salvo (modo local) - Dados no navegador');
             }
+        }
+        
+        // Limpar formulário
+        function clearForm() {
+            appointmentForm.reset();
+            selectedServiceElement.textContent = 'Selecione um serviço';
+            selectedDateElement.textContent = '--/--/----';
+            selectedTimeElement.textContent = '--:--';
+            selectedDate = null;
+            selectedTime = null;
+            
+            document.querySelectorAll('.calendar-date.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            document.querySelectorAll('.time-slot.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
         }
         
         // Mostrar modal de confirmação
@@ -1204,33 +1217,44 @@
                 updateSyncStatus('Cancelando agendamento...', 'syncing');
                 
                 try {
-                    const response = await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            action: 'deleteAppointment',
-                            id: id
-                        })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        appointments = appointments.filter(apt => apt.id !== id);
-                        localStorage.setItem('manicureAppointments', JSON.stringify(appointments));
-                        updateAppointmentsList();
-                        renderCalendar();
-                        updateSyncStatus('Agendamento cancelado!', 'success');
-                        alert('Agendamento cancelado com sucesso!');
-                    } else {
-                        throw new Error(result.error || 'Erro ao cancelar agendamento');
+                    // Tenta cancelar no Google Sheets
+                    if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.includes('google.com')) {
+                        const response = await fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                action: 'deleteAppointment',
+                                id: id
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Remove da lista local também
+                            appointments = appointments.filter(apt => apt.id !== id);
+                            localStorage.setItem('manicureAppointments', JSON.stringify(appointments));
+                            updateAppointmentsList();
+                            renderCalendar();
+                            updateSyncStatus('Agendamento cancelado!', 'success');
+                            alert('Agendamento cancelado com sucesso!');
+                            return;
+                        }
                     }
+                    
+                    // Fallback: cancela apenas localmente
+                    throw new Error('Google Sheets não disponível');
+                    
                 } catch (error) {
-                    console.error('Erro ao cancelar agendamento:', error);
-                    alert('Erro ao cancelar agendamento. Tente novamente.');
-                    updateSyncStatus('Erro ao cancelar agendamento', 'error');
+                    // Cancela apenas localmente
+                    appointments = appointments.filter(apt => apt.id !== id);
+                    localStorage.setItem('manicureAppointments', JSON.stringify(appointments));
+                    updateAppointmentsList();
+                    renderCalendar();
+                    updateSyncStatus('Agendamento cancelado localmente', 'syncing');
+                    alert('Agendamento cancelado (modo local)');
                 }
             }
         }
@@ -1241,32 +1265,43 @@
                 updateSyncStatus('Limpando dados...', 'syncing');
                 
                 try {
-                    const response = await fetch(GOOGLE_SCRIPT_URL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify({
-                            action: 'clearAllAppointments'
-                        })
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (result.success) {
-                        appointments = [];
-                        localStorage.removeItem('manicureAppointments');
-                        updateAppointmentsList();
-                        renderCalendar();
-                        updateSyncStatus('Dados limpos com sucesso!', 'success');
-                        alert('Todos os agendamentos foram removidos.');
-                    } else {
-                        throw new Error(result.error || 'Erro ao limpar dados');
+                    // Tenta limpar no Google Sheets
+                    if (GOOGLE_SCRIPT_URL && GOOGLE_SCRIPT_URL.includes('google.com')) {
+                        const response = await fetch(GOOGLE_SCRIPT_URL, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                action: 'clearAllAppointments'
+                            })
+                        });
+                        
+                        const result = await response.json();
+                        
+                        if (result.success) {
+                            // Limpa localmente também
+                            appointments = [];
+                            localStorage.removeItem('manicureAppointments');
+                            updateAppointmentsList();
+                            renderCalendar();
+                            updateSyncStatus('Dados limpos com sucesso!', 'success');
+                            alert('Todos os agendamentos foram removidos.');
+                            return;
+                        }
                     }
+                    
+                    // Fallback: limpa apenas localmente
+                    throw new Error('Google Sheets não disponível');
+                    
                 } catch (error) {
-                    console.error('Erro ao limpar dados:', error);
-                    alert('Erro ao limpar dados. Tente novamente.');
-                    updateSyncStatus('Erro ao limpar dados', 'error');
+                    // Limpa apenas localmente
+                    appointments = [];
+                    localStorage.removeItem('manicureAppointments');
+                    updateAppointmentsList();
+                    renderCalendar();
+                    updateSyncStatus('Dados locais limpos', 'syncing');
+                    alert('Todos os agendamentos locais foram removidos.');
                 }
             }
         }
