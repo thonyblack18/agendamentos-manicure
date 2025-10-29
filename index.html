@@ -579,7 +579,7 @@
                     <li><a href="#home">Início</a></li>
                     <li><a href="#services">Serviços</a></li>
                     <li><a href="#booking">Agendamento</a></li>
-                    <li><a href="#admin">Painel Admin</a></li>
+                    <li><a href="#admin" id="admin-nav-link">Painel Admin</a></li>
                     <li><a href="#contact">Contato</a></li>
                 </ul>
             </nav>
@@ -805,7 +805,7 @@
 
     <script>
         // SUA URL DO GOOGLE APPS SCRIPT - COLE AQUI SUA URL
-        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/sAKfycbyZUtLY3QAd4WuHYOIoB_oV2f_Pj6UQknamipqvXtuKsQaQKMxWl4kgZ4OF1GytDrtP/exec';
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/SUA_URL_AQUI/exec';
         
         // Variáveis globais
         let currentDate = new Date();
@@ -835,6 +835,7 @@
             loadAppointments();
             renderCalendar();
             setupEventListeners();
+            setupAdminPanel(); // Configura o painel admin protegido
             
             // Sincroniza a cada 30 segundos
             syncInterval = setInterval(loadAppointments, 30000);
@@ -867,6 +868,62 @@
             refreshButton.addEventListener('click', loadAppointments);
             clearButton.addEventListener('click', clearAllData);
         }
+        
+        // =============================================
+        // SISTEMA DE SEGURANÇA - PAINEL ADMIN PROTEGIDO
+        // =============================================
+        
+        function setupAdminPanel() {
+            const adminPanel = document.getElementById('admin');
+            const adminNavLink = document.getElementById('admin-nav-link');
+            
+            // Verifica se já está logado como manicure
+            const isManicure = localStorage.getItem('isManicure') === 'true';
+            
+            if (!isManicure) {
+                // Cliente normal - esconde o painel admin
+                if (adminPanel) adminPanel.style.display = 'none';
+                if (adminNavLink) adminNavLink.style.display = 'none';
+                
+                // Adiciona botão de acesso para manicure
+                addAdminAccessButton();
+            } else {
+                // Manicure - mostra tudo
+                if (adminPanel) adminPanel.style.display = 'block';
+                if (adminNavLink) adminNavLink.style.display = 'block';
+            }
+        }
+
+        function addAdminAccessButton() {
+            const adminSection = document.getElementById('admin');
+            if (!adminSection) return;
+            
+            const accessButton = document.createElement('div');
+            accessButton.innerHTML = `
+                <div style="text-align: center; margin: 20px 0;">
+                    <button class="btn btn-secondary" id="admin-access-btn">
+                        <i class="fas fa-lock"></i> Acesso da Manicure
+                    </button>
+                </div>
+            `;
+            
+            adminSection.parentNode.insertBefore(accessButton, adminSection);
+            
+            document.getElementById('admin-access-btn').addEventListener('click', function() {
+                const password = prompt('Digite a senha de acesso:');
+                if (password === 'manicure123') { // 🔒 MUDE A SENHA AQUI!
+                    localStorage.setItem('isManicure', 'true');
+                    alert('Acesso liberado!');
+                    location.reload();
+                } else {
+                    alert('Senha incorreta!');
+                }
+            });
+        }
+        
+        // =============================================
+        // FIM DO SISTEMA DE SEGURANÇA
+        // =============================================
         
         // Carregar agendamentos do Google Sheets
         async function loadAppointments() {
