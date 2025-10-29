@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Studio de Manicure - Sistema em Tempo Real</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #ff6b8b;
+            --secondary: #6b5bff;
+            --light: #f8f9fa;
+            --dark: #343a40;
+            --success: #28a745;
+            --danger: #dc3545;
+            --warning: #ffc107;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: #333;
+            line-height: 1.6;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+        
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo i {
+            margin-right: 10px;
+        }
+        
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+        
+        .nav-links li {
+            margin-left: 25px;
+        }
+        
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-links a:hover {
+            color: #ffdde1;
+        }
+        
+        .hero {
+            padding: 4rem 0;
+            text-align: center;
+            background-color: white;
+        }
+        
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto 2rem;
+            color: #666;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--primary);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+        
+        .btn:hover {
+            background: #ff4d6d;
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(255, 107, 139, 0.4);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary);
+        }
+        
+        .btn-secondary:hover {
+            background: #5a4bff;
+        }
+        
+        section {
+            padding: 4rem 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .section-title h2 {
+            font-size: 2.2rem;
+            color: var(--dark);
+            margin-bottom: 10px;
+        }
+        
+        .section-title p {
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .services {
+            background-color: var(--light);
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+        }
+        
+        .service-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+        }
+        
+        .service-img {
+            height: 200px;
+            background-color: #eee;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #aaa;
+            font-size: 3rem;
+        }
+        
+        .service-content {
+            padding: 20px;
+        }
+        
+        .service-content h3 {
+            margin-bottom: 10px;
+            color: var(--dark);
+        }
+        
+        .service-content p {
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .price {
+            font-weight: bold;
+            color: var(--primary);
+            font-size: 1.2rem;
+        }
+        
+        .booking {
+            background-color: white;
+        }
+        
+        .booking-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+        
+        .calendar {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .calendar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 5px;
+        }
+        
+        .calendar-day {
+            text-align: center;
+            padding: 10px 5px;
+            font-weight: bold;
+            color: var(--dark);
+        }
+        
+        .calendar-date {
+            text-align: center;
+            padding: 10px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .calendar-date:hover {
+            background-color: #f0f0f0;
+        }
+        
+        .calendar-date.selected {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .calendar-date.unavailable {
+            background-color: #f8f8f8;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .calendar-date.occupied {
+            background-color: var(--danger);
+            color: white;
+            cursor: not-allowed;
+        }
+        
+        .time-slots {
+            margin-top: 20px;
+        }
+        
+        .time-slots h3 {
+            margin-bottom: 15px;
+        }
+        
+        .slots-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+        
+        .time-slot {
+            padding: 10px;
+            text-align: center;
+            background: #f8f8f8;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .time-slot:hover {
+            background: #e8e8e8;
+        }
+        
+        .time-slot.selected {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .time-slot.unavailable {
+            background: #f8f8f8;
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .time-slot.occupied {
+            background: var(--danger);
+            color: white;
+            cursor: not-allowed;
+        }
+        
+        .booking-form {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .form-control {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+        }
+        
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+        
+        .booking-summary {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .booking-summary p {
+            margin-bottom: 5px;
+        }
+        
+        .admin-panel {
+            background-color: var(--light);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+        
+        .admin-panel h3 {
+            margin-bottom: 20px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-panel h3 i {
+            margin-right: 10px;
+        }
+        
+        .appointments-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .appointment-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .appointment-info h4 {
+            margin-bottom: 5px;
+            color: var(--dark);
+        }
+        
+        .appointment-info p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .appointment-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-small {
+            padding: 8px 15px;
+            font-size: 0.9rem;
+        }
+        
+        .btn-danger {
+            background: var(--danger);
+        }
+        
+        .btn-danger:hover {
+            background: #c82333;
+        }
+        
+        .sync-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            border-radius: 5px;
+            background: #e8f5e8;
+        }
+        
+        .sync-status.syncing {
+            background: #fff3cd;
+        }
+        
+        .sync-status.error {
+            background: #f8d7da;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0 1rem;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 30px;
+            margin-bottom: 2rem;
+        }
+        
+        .footer-column h3 {
+            margin-bottom: 20px;
+            font-size: 1.2rem;
+        }
+        
+        .footer-column p, .footer-column a {
+            color: #aaa;
+            margin-bottom: 10px;
+            display: block;
+            text-decoration: none;
+        }
+        
+        .footer-column a:hover {
+            color: white;
+        }
+        
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .social-links a {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            background: var(--primary);
+            transform: translateY(-3px);
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .modal-header h3 {
+            color: var(--dark);
+        }
+        
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: #999;
+        }
+        
+        .close-modal:hover {
+            color: var(--dark);
+        }
+        
+        @media (max-width: 768px) {
+            .navbar {
+                flex-direction: column;
+            }
+            
+            .nav-links {
+                margin-top: 15px;
+            }
+            
+            .nav-links li {
+                margin-left: 15px;
+                margin-right: 15px;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .booking-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .appointment-item {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .appointment-actions {
+                margin-top: 10px;
+                width: 100%;
+                justify-content: flex-end;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <nav class="navbar">
+                <div class="logo">
+                    <i class="fas fa-spa"></i> Studio de Beleza
+                </div>
+                <ul class="nav-links">
+                    <li><a href="#home">Início</a></li>
+                    <li><a href="#services">Serviços</a></li>
+                    <li><a href="#booking">Agendamento</a></li>
+                    <li><a href="#admin">Painel Admin</a></li>
+                    <li><a href="#contact">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero" id="home">
+        <div class="container">
+            <h1>Cuide das suas unhas com estilo</h1>
+            <p>Agende seu horário online e tenha mãos e pés perfeitos no conforto do nosso studio</p>
+            <a href="#booking" class="btn">Agendar Horário</a>
+        </div>
+    </section>
+
+    <section class="services" id="services">
+        <div class="container">
+            <div class="section-title">
+                <h2>Nossos Serviços</h2>
+                <p>Confira nossa tabela de preços e escolha o serviço ideal para você</p>
+            </div>
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-img">
+                        <i class="fas fa-hand-paper"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Manicure Completa</h3>
+                        <p>Corte, lixamento, cutículas, hidratação e esmaltação</p>
+                        <div class="price">R$ 25,00</div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img">
+                        <i class="fas fa-socks"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Pedicure Completa</h3>
+                        <p>Tratamento completo para os pés com hidratação</p>
+                        <div class="price">R$ 30,00</div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img">
+                        <i class="fas fa-ruler-vertical"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Alongamento em Gel</h3>
+                        <p>Unhas alongadas com acabamento perfeito em gel</p>
+                        <div class="price">R$ 80,00</div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img">
+                        <i class="fas fa-tools"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Manutenção de Alongamento</h3>
+                        <p>Preenchimento e manutenção do alongamento em gel</p>
+                        <div class="price">R$ 50,00</div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img">
+                        <i class="fas fa-spa"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Spa dos Pés</h3>
+                        <p>Relaxamento completo com massagem e hidratação profunda</p>
+                        <div class="price">R$ 45,00</div>
+                    </div>
+                </div>
+                <div class="service-card">
+                    <div class="service-img">
+                        <i class="fas fa-palette"></i>
+                    </div>
+                    <div class="service-content">
+                        <h3>Unhas Decoradas</h3>
+                        <p>Arte personalizada nas unhas com diversos estilos</p>
+                        <div class="price">A partir de R$ 10,00</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="booking" id="booking">
+        <div class="container">
+            <div class="section-title">
+                <h2>Agende seu Horário</h2>
+                <p>Escolha a data e horário disponíveis para o seu atendimento</p>
+            </div>
+            
+            <div class="sync-status" id="sync-status">
+                <i class="fas fa-sync-alt"></i>
+                <span>Sincronizando com a nuvem...</span>
+            </div>
+            
+            <div class="booking-container">
+                <div class="calendar">
+                    <div class="calendar-header">
+                        <button id="prev-month">&lt;</button>
+                        <h3 id="current-month">Junho 2023</h3>
+                        <button id="next-month">&gt;</button>
+                    </div>
+                    <div class="calendar-grid">
+                        <div class="calendar-day">Dom</div>
+                        <div class="calendar-day">Seg</div>
+                        <div class="calendar-day">Ter</div>
+                        <div class="calendar-day">Qua</div>
+                        <div class="calendar-day">Qui</div>
+                        <div class="calendar-day">Sex</div>
+                        <div class="calendar-day">Sáb</div>
+                        <!-- Dias serão preenchidos via JavaScript -->
+                    </div>
+                    <div class="time-slots">
+                        <h3>Horários Disponíveis</h3>
+                        <div class="slots-grid" id="time-slots">
+                            <!-- Horários serão preenchidos via JavaScript -->
+                        </div>
+                    </div>
+                </div>
+                <div class="booking-form">
+                    <h3>Preencha seus dados</h3>
+                    <div class="booking-summary" id="booking-summary">
+                        <p><strong>Serviço:</strong> <span id="selected-service">Selecione um serviço</span></p>
+                        <p><strong>Data:</strong> <span id="selected-date">--/--/----</span></p>
+                        <p><strong>Horário:</strong> <span id="selected-time">--:--</span></p>
+                    </div>
+                    <form id="appointment-form">
+                        <div class="form-group">
+                            <label for="service">Serviço Desejado</label>
+                            <select class="form-control" id="service" required>
+                                <option value="">Selecione um serviço</option>
+                                <option value="Manicure Completa">Manicure Completa - R$ 25,00</option>
+                                <option value="Pedicure Completa">Pedicure Completa - R$ 30,00</option>
+                                <option value="Alongamento em Gel">Alongamento em Gel - R$ 80,00</option>
+                                <option value="Manutenção de Alongamento">Manutenção de Alongamento - R$ 50,00</option>
+                                <option value="Spa dos Pés">Spa dos Pés - R$ 45,00</option>
+                                <option value="Unhas Decoradas">Unhas Decoradas - A partir de R$ 10,00</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="name">Seu Nome</label>
+                            <input type="text" class="form-control" id="name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="phone">Telefone</label>
+                            <input type="tel" class="form-control" id="phone" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">E-mail</label>
+                            <input type="email" class="form-control" id="email">
+                        </div>
+                        <div class="form-group">
+                            <label for="notes">Observações (opcional)</label>
+                            <textarea class="form-control" id="notes" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn" id="submit-btn">Confirmar Agendamento</button>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Painel de Administração -->
+            <div class="admin-panel" id="admin">
+                <h3><i class="fas fa-tachometer-alt"></i> Painel de Administração</h3>
+                <div class="appointments-list" id="appointments-list">
+                    <!-- Lista de agendamentos será preenchida via JavaScript -->
+                </div>
+                <div style="margin-top: 20px; text-align: center;">
+                    <button class="btn btn-secondary" id="refresh-data">Atualizar Agendamentos</button>
+                    <button class="btn btn-danger" id="clear-data">Limpar Todos os Dados</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Modal de Confirmação -->
+    <div class="modal" id="confirmation-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Agendamento Confirmado!</h3>
+                <button class="close-modal">&times;</button>
+            </div>
+            <div id="modal-body">
+                <!-- Conteúdo será preenchido via JavaScript -->
+            </div>
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn" id="modal-close-btn">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <footer id="contact">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>Studio de Beleza</h3>
+                    <p>Especializada em cuidados com as unhas, oferecendo serviços de qualidade em um ambiente aconchegante.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="fab fa-whatsapp"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-facebook"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Horário de Funcionamento</h3>
+                    <p>Segunda a Sexta: 9h às 19h</p>
+                    <p>Sábado: 9h às 17h</p>
+                    <p>Domingo: Fechado</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Contato</h3>
+                    <p><i class="fas fa-phone"></i> (11) 99999-9999</p>
+                    <p><i class="fas fa-envelope"></i> contato@studio.com</p>
+                    <p><i class="fas fa-map-marker-alt"></i> Rua Exemplo, 123 - Bairro, Cidade - SP</p>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 Studio de Beleza. Todos os direitos reservados.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // CONFIGURAÇÃO - SUBSTITUA COM SUA URL DO GOOGLE APPS SCRIPT
+        const GOOGLE_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwQhSo_6d9J8Q8J8Q8J8Q8J8Q8J8Q8J8Q8J8Q8J8Q8J8Q8J8Q8/exec';
+        
+        // Variáveis globais
+        let currentDate = new Date();
+        let selectedDate = null;
+        let selectedTime = null;
+        let appointments = [];
+        let syncInterval;
+        
+        // Elementos DOM
+        const currentMonthElement = document.getElementById('current-month');
+        const calendarGrid = document.querySelector('.calendar-grid');
+        const timeSlotsElement = document.getElementById('time-slots');
+        const selectedServiceElement = document.getElementById('selected-service');
+        const selectedDateElement = document.getElementById('selected-date');
+        const selectedTimeElement = document.getElementById('selected-time');
+        const serviceSelect = document.getElementById('service');
+        const appointmentForm = document.getElementById('appointment-form');
+        const appointmentsList = document.getElementById('appointments-list');
+        const confirmationModal = document.getElementById('confirmation-modal');
+        const modalBody = document.getElementById('modal-body');
+        const refreshButton = document.getElementById('refresh-data');
+        const clearButton = document.getElementById('clear-data');
+        const syncStatus = document.getElementById('sync-status');
+        
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            loadAppointments();
+            renderCalendar();
+            setupEventListeners();
+            
+            // Sincroniza a cada 30 segundos
+            syncInterval = setInterval(loadAppointments, 30000);
+        });
+        
+        // Configurar event listeners
+        function setupEventListeners() {
+            document.getElementById('prev-month').addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() - 1);
+                renderCalendar();
+            });
+            
+            document.getElementById('next-month').addEventListener('click', function() {
+                currentDate.setMonth(currentDate.getMonth() + 1);
+                renderCalendar();
+            });
+            
+            serviceSelect.addEventListener('change', function() {
+                selectedServiceElement.textContent = this.value || 'Selecione um serviço';
+            });
+            
+            appointmentForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitAppointment();
+            });
+            
+            document.querySelector('.close-modal').addEventListener('click', closeModal);
+            document.getElementById('modal-close-btn').addEventListener('click', closeModal);
+            
+            refreshButton.addEventListener('click', loadAppointments);
+            clearButton.addEventListener('click', clearAllData);
+        }
+        
+        // Carregar agendamentos do Google Sheets
+        async function loadAppointments() {
+            updateSyncStatus('Sincronizando com a nuvem...', 'syncing');
+            
+            try {
+                const response = await fetch(`${GOOGLE_SCRIPT_URL}?action=getAppointments`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    appointments = data.appointments || [];
+                    updateAppointmentsList();
+                    renderCalendar();
+                    updateSyncStatus('Sincronizado com sucesso!', 'success');
+                } else {
+                    throw new Error(data.error || 'Erro ao carregar agendamentos');
+                }
+            } catch (error) {
+                console.error('Erro ao carregar agendamentos:', error);
+                updateSyncStatus('Erro na sincronização. Usando dados locais.', 'error');
+                
+                // Fallback para localStorage
+                const localAppointments = JSON.parse(localStorage.getItem('manicureAppointments')) || [];
+                appointments = localAppointments;
+                updateAppointmentsList();
+                renderCalendar();
+            }
+        }
+        
+        // Atualizar status da sincronização
+        function updateSyncStatus(message, type) {
+            const icon = syncStatus.querySelector('i');
+            const text = syncStatus.querySelector('span');
+            
+            text.textContent = message;
+            syncStatus.className = 'sync-status';
+            
+            if (type === 'syncing') {
+                syncStatus.classList.add('syncing');
+                icon.className = 'fas fa-sync-alt fa-spin';
+            } else if (type === 'success') {
+                icon.className = 'fas fa-check-circle';
+                syncStatus.classList.add('success');
+            } else if (type === 'error') {
+                icon.className = 'fas fa-exclamation-triangle';
+                syncStatus.classList.add('error');
+            }
+        }
+        
+        // Renderizar calendário
+        function renderCalendar() {
+            // Atualiza o cabeçalho do mês
+            currentMonthElement.textContent = formatMonthYear(currentDate);
+            
+            // Limpa o grid do calendário (exceto os dias da semana)
+            while (calendarGrid.children.length > 7) {
+                calendarGrid.removeChild(calendarGrid.lastChild);
+            }
+            
+            // Obtém o primeiro dia do mês e o último dia do mês
+            const firstDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            const lastDay = new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0);
+            
+            // Obtém o dia da semana do primeiro dia (0 = Domingo, 6 = Sábado)
+            const firstDayIndex = firstDay.getDay();
+            
+            // Obtém o último dia do mês anterior
+            const prevLastDay = new Date(currentDate.getFullYear(), currentDate.getMonth(), 0).getDate();
+            
+            // Adiciona os dias do mês anterior (se necessário)
+            for (let i = firstDayIndex; i > 0; i--) {
+                const day = prevLastDay - i + 1;
+                const dateElement = document.createElement('div');
+                dateElement.className = 'calendar-date unavailable';
+                dateElement.textContent = day;
+                calendarGrid.appendChild(dateElement);
+            }
+            
+            // Adiciona os dias do mês atual
+            for (let i = 1; i <= lastDay.getDate(); i++) {
+                const dateElement = document.createElement('div');
+                dateElement.className = 'calendar-date';
+                dateElement.textContent = i;
+                
+                // Cria uma data completa para este dia
+                const fullDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), i);
+                const dateString = formatDateForStorage(fullDate);
+                
+                // Verifica se é um dia ocupado
+                const dayAppointments = appointments.filter(apt => apt.date === dateString);
+                const isOccupied = dayAppointments.length >= 8; // Máximo de 8 agendamentos por dia
+                
+                // Marca fins de semana como indisponíveis
+                if (fullDate.getDay() === 0 || fullDate.getDay() === 6) {
+                    dateElement.classList.add('unavailable');
+                } else if (isOccupied) {
+                    dateElement.classList.add('occupied');
+                } else {
+                    // Adiciona evento de clique para dias disponíveis
+                    dateElement.addEventListener('click', function() {
+                        selectDate(fullDate, this);
+                    });
+                }
+                
+                calendarGrid.appendChild(dateElement);
+            }
+            
+            // Adiciona os primeiros dias do próximo mês (se necessário)
+            const totalCells = 42; // 6 semanas * 7 dias
+            const remainingCells = totalCells - (firstDayIndex + lastDay.getDate());
+            
+            for (let i = 1; i <= remainingCells; i++) {
+                const dateElement = document.createElement('div');
+                dateElement.className = 'calendar-date unavailable';
+                dateElement.textContent = i;
+                calendarGrid.appendChild(dateElement);
+            }
+        }
+        
+        // Selecionar data
+        function selectDate(date, element) {
+            // Remove a seleção anterior
+            document.querySelectorAll('.calendar-date.selected').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Adiciona a seleção atual
+            element.classList.add('selected');
+            selectedDate = date;
+            selectedDateElement.textContent = formatDate(date);
+            
+            // Atualiza os horários disponíveis
+            updateTimeSlots();
+        }
+        
+        // Atualizar horários disponíveis
+        function updateTimeSlots() {
+            // Limpa os horários anteriores
+            timeSlotsElement.innerHTML = '';
+            
+            if (!selectedDate) return;
+            
+            // Horários de exemplo
+            const allTimes = [
+                '09:00', '10:00', '11:00', '12:00', '14:00', '15:00', '16:00', '17:00'
+            ];
+            
+            // Obtém os agendamentos para a data selecionada
+            const dateString = formatDateForStorage(selectedDate);
+            const dayAppointments = appointments.filter(apt => apt.date === dateString);
+            const occupiedTimes = dayAppointments.map(apt => apt.time);
+            
+            // Adiciona os horários disponíveis
+            allTimes.forEach(time => {
+                const timeElement = document.createElement('div');
+                
+                if (occupiedTimes.includes(time)) {
+                    timeElement.className = 'time-slot occupied';
+                    timeElement.textContent = time;
+                } else {
+                    timeElement.className = 'time-slot';
+                    timeElement.textContent = time;
+                    
+                    timeElement.addEventListener('click', function() {
+                        // Remove a seleção anterior
+                        document.querySelectorAll('.time-slot.selected').forEach(el => {
+                            el.classList.remove('selected');
+                        });
+                        
+                        // Adiciona a seleção atual
+                        this.classList.add('selected');
+                        selectedTime = time;
+                        selectedTimeElement.textContent = time;
+                    });
+                }
+                
+                timeSlotsElement.appendChild(timeElement);
+            });
+        }
+        
+        // Submeter agendamento
+        async function submitAppointment() {
+            if (!selectedDate || !selectedTime) {
+                alert('Por favor, selecione uma data e horário.');
+                return;
+            }
+            
+            if (!serviceSelect.value) {
+                alert('Por favor, selecione um serviço.');
+                return;
+            }
+            
+            // Cria o objeto de agendamento
+            const appointment = {
+                id: Date.now(),
+                service: serviceSelect.value,
+                date: formatDateForStorage(selectedDate),
+                time: selectedTime,
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                notes: document.getElementById('notes').value,
+                timestamp: new Date().toISOString()
+            };
+            
+            updateSyncStatus('Salvando agendamento...', 'syncing');
+            
+            try {
+                // Tenta salvar no Google Sheets
+                const response = await fetch(GOOGLE_SCRIPT_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        action: 'addAppointment',
+                        appointment: appointment
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Adiciona à lista local
+                    appointments.push(appointment);
+                    localStorage.setItem('manicureAppointments', JSON.stringify(appointments));
+                    
+                    // Atualiza a lista de agendamentos
+                    updateAppointmentsList();
+                    
+                    // Mostra o modal de confirmação
+                    showConfirmationModal(appointment);
+                    
+                    // Limpa o formulário
+                    appointmentForm.reset();
+                    selectedServiceElement.textContent = 'Selecione um serviço';
+                    selectedDateElement.textContent = '--/--/----';
+                    selectedTimeElement.textContent = '--:--';
+                    selectedDate = null;
+                    selectedTime = null;
+                    
+                    // Remove seleções do calendário
+                    document.querySelectorAll('.calendar-date.selected').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    
+                    document.querySelectorAll('.time-slot.selected').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    
+                    // Atualiza o calendário
+                    renderCalendar();
+                    updateSyncStatus('Agendamento salvo com sucesso!', 'success');
+                } else {
+                    throw new Error(result.error || 'Erro ao salvar agendamento');
+                }
+            } catch (error) {
+                console.error('Erro ao salvar agendamento:', error);
+                alert('Erro ao salvar agendamento. Tente novamente.');
+                updateSyncStatus('Erro ao salvar agendamento', 'error');
+            }
+        }
+        
+        // Mostrar modal de confirmação
+        function showConfirmationModal(appointment) {
+            modalBody.innerHTML = `
+                <p><strong>Serviço:</strong> ${appointment.service}</p>
+                <p><strong>Data:</strong> ${formatDate(new Date(appointment.date))}</p>
+                <p><strong>Horário:</strong> ${appointment.time}</p>
+                <p><strong>Cliente:</strong> ${appointment.name}</p>
+                <p><strong>Telefone:</strong> ${appointment.phone}</p>
+                ${appointment.email ? `<p><strong>E-mail:</strong> ${appointment.email}</p>` : ''}
+                ${appointment.notes ? `<p><strong>Observações:</strong> ${appointment.notes}</p>` : ''}
+                <p style="margin-top: 15px; padding: 10px; background: #f0f8f0; border-radius: 5px;">
+                    <strong>Agendamento confirmado com sucesso!</strong><br>
+                    Em breve entraremos em contato para confirmar.
+                </p>
+            `;
+            confirmationModal.style.display = 'flex';
+        }
+        
+        // Fechar modal
+        function closeModal() {
+            confirmationModal.style.display = 'none';
+        }
+        
+        // Atualizar lista de agendamentos
+        function updateAppointmentsList() {
+            appointmentsList.innerHTML = '';
+            
+            if (appointments.length === 0) {
+                appointmentsList.innerHTML = '<p style="text-align: center; color: #666;">Nenhum agendamento encontrado.</p>';
+                return;
+            }
+            
+            // Ordena os agendamentos por data e hora
+            const sortedAppointments = [...appointments].sort((a, b) => {
+                const dateA = new Date(a.date + ' ' + a.time);
+                const dateB = new Date(b.date + ' ' + b.time);
+                return dateA - dateB;
+            });
+            
+            // Adiciona cada agendamento à lista
+            sortedAppointments.forEach(appointment => {
+                const appointmentElement = document.createElement('div');
+                appointmentElement.className = 'appointment-item';
+                
+                appointmentElement.innerHTML = `
+                    <div class="appointment-info">
+                        <h4>${appointment.name} - ${appointment.service}</h4>
+                        <p><strong>Data:</strong> ${formatDate(new Date(appointment.date))} às ${appointment.time}</p>
+                        <p><strong>Contato:</strong> ${appointment.phone} ${appointment.email ? `| ${appointment.email}` : ''}</p>
+                        ${appointment.notes ? `<p><strong>Observações:</strong> ${appointment.notes}</p>` : ''}
+                    </div>
+                    <div class="appointment-actions">
+                        <button class="btn btn-small btn-danger" data-id="${appointment.id}">Cancelar</button>
+                    </div>
+                `;
+                
+                appointmentsList.appendChild(appointmentElement);
+            });
+            
+            // Adiciona event listeners para os botões de cancelar
+            document.querySelectorAll('.appointment-actions .btn-danger').forEach(button => {
+                button.addEventListener('click', function() {
+                    const id = parseInt(this.getAttribute('data-id'));
+                    cancelAppointment(id);
+                });
+            });
+        }
+        
+        // Cancelar agendamento
+        async function cancelAppointment(id) {
+            if (confirm('Tem certeza que deseja cancelar este agendamento?')) {
+                updateSyncStatus('Cancelando agendamento...', 'syncing');
+                
+                try {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'deleteAppointment',
+                            id: id
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        appointments = appointments.filter(apt => apt.id !== id);
+                        localStorage.setItem('manicureAppointments', JSON.stringify(appointments));
+                        updateAppointmentsList();
+                        renderCalendar();
+                        updateSyncStatus('Agendamento cancelado!', 'success');
+                        alert('Agendamento cancelado com sucesso!');
+                    } else {
+                        throw new Error(result.error || 'Erro ao cancelar agendamento');
+                    }
+                } catch (error) {
+                    console.error('Erro ao cancelar agendamento:', error);
+                    alert('Erro ao cancelar agendamento. Tente novamente.');
+                    updateSyncStatus('Erro ao cancelar agendamento', 'error');
+                }
+            }
+        }
+        
+        // Limpar todos os dados
+        async function clearAllData() {
+            if (confirm('Tem certeza que deseja limpar TODOS os agendamentos? Esta ação não pode ser desfeita.')) {
+                updateSyncStatus('Limpando dados...', 'syncing');
+                
+                try {
+                    const response = await fetch(GOOGLE_SCRIPT_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            action: 'clearAllAppointments'
+                        })
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (result.success) {
+                        appointments = [];
+                        localStorage.removeItem('manicureAppointments');
+                        updateAppointmentsList();
+                        renderCalendar();
+                        updateSyncStatus('Dados limpos com sucesso!', 'success');
+                        alert('Todos os agendamentos foram removidos.');
+                    } else {
+                        throw new Error(result.error || 'Erro ao limpar dados');
+                    }
+                } catch (error) {
+                    console.error('Erro ao limpar dados:', error);
+                    alert('Erro ao limpar dados. Tente novamente.');
+                    updateSyncStatus('Erro ao limpar dados', 'error');
+                }
+            }
+        }
+        
+        // Funções auxiliares de formatação
+        function formatMonthYear(date) {
+            const months = [
+                'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+                'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+            ];
+            return `${months[date.getMonth()]} ${date.getFullYear()}`;
+        }
+        
+        function formatDate(date) {
+            return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1).toString().padStart(2, '0')}/${date.getFullYear()}`;
+        }
+        
+        function formatDateForStorage(date) {
+            return `${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}-${date.getDate().toString().padStart(2, '0')}`;
+        }
+    </script>
+</body>
+</html>
